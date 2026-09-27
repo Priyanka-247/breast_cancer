@@ -1,19 +1,21 @@
 .banner {
 	height: 75px;
     margin: 0px -10px 10px;
-    background-color: #00878d;
-    border-radius: 2px;
+    background-color: #0f172a;
+    border-radius: 6px;
 }
 
-.banner h2{
-    color: white;
-    padding-top: 10px;
-    margin-left: 2%;
+.banner h2 {
+    color: #ffffff;
+    padding-top: 18px;
+    margin-left: 25px;
     display: inline-block;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 700;
 }
 
 table, td, th {    
-    border: 1px solid #ddd;
+    border: 1px solid #e2e8f0;
     text-align: left;
 }
 
@@ -23,15 +25,21 @@ table {
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px 15px;
 }
 
+th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+}
 
 h1, h2, h3, h4, h5, h6 {
-	color: #24515d;
-	font-family: font-family: "Courier New", Courier;
-	}
+	color: #0f172a;
+	font-family: system-ui, -apple-system, sans-serif;
+}
 
-p {
-	font-family: font-family: "Courier New", Courier;
+p, label, span {
+	font-family: system-ui, -apple-system, sans-serif;
+	color: #334155;
 }

@@ -34,8 +34,9 @@ def produce_model_metrics(fit, test_set, test_class_set, estimator):
             return print("'{0}' is not an instantiated model from scikit-learn".format(fit))
 
         # Captures whether the model has been trained
-        if not vars(fit)[my_estimators[estimator]]:
+        if not hasattr(fit, my_estimators[estimator]):
             return print("Model does not appear to be trained.")
+
 
     except KeyError as e:
         raise KeyError("'{0}' does not correspond with the appropriate key inside the estimators dictionary. \

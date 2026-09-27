@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import numpy as np
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import plotly.graph_objs as go
-import global_vars as gv
 import pandas as pd
+import dash
+import plotly.graph_objs as go
 
-sys.path.insert(0, '../src/python/')
+try:
+    from dash import dcc, html
+except ImportError:
+    import dash_core_components as dcc
+    import dash_html_components as html
+
+# Setup module search paths dynamically
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+DASH_DIR = os.path.abspath(os.path.dirname(__file__))
+SRC_PYTHON_DIR = os.path.join(BASE_DIR, 'src', 'python')
+
+for p in [BASE_DIR, DASH_DIR, SRC_PYTHON_DIR]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+import global_vars as gv
 from data_extraction import breast_cancer, names
-sys.path.pop(0)
 
 # Test set metrics
 cross_tab_knn = gv.cross_tab_knn
@@ -34,7 +46,13 @@ def generate_table(dataframe, max_rows=10):
 		]) for i in range(min(len(dataframe), max_rows))]
 	)
 
-app = dash.Dash()
+my_css_urls = [
+    'https://rawgit.com/raviolli77/machineLearning_breastCancer_Python/master/dash_dashboard/dash_breast_cancer.css',
+]
+
+app = dash.Dash(__name__, external_stylesheets=my_css_urls)
+server = app.server
+
 
 app.layout = html.Div([
 	html.Div([
@@ -433,17 +451,6 @@ def update_table(machine_learning):
 	return generate_table(dataframe = final_cross_tab)
 
 
-# Append externally hosted CSS Stylesheet
-my_css_urls = [
-# For dev:
-'https://rawgit.com/raviolli77/machineLearning_breastCancer_Python/master/dash_dashboard/dash_breast_cancer.css',
-# For prod
-#'https://cdn.rawgit.com/raviolli77/machineLearning_breastCancer_Python/master/dash_dashboard/dash_breast_cancer.css'
-]
-
-app.css.append_css({
-	'external_url': my_css_urls
-	})
-
 if __name__ == '__main__':
     app.run_server(debug=True)
+

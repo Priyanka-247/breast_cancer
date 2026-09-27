@@ -16,9 +16,9 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from urllib.request import urlopen
 
-# Loading data ------------------------------
-UCI_data_URL = 'https://archive.ics.uci.edu/ml/machine-learning-databases\
-/breast-cancer-wisconsin/wdbc.data'
+import os
+
+UCI_data_URL = 'https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data'
 
 names = ['id_number', 'diagnosis', 'radius_mean',
          'texture_mean', 'perimeter_mean', 'area_mean',
@@ -37,13 +37,26 @@ names = ['id_number', 'diagnosis', 'radius_mean',
 
 dx = ['Malignant', 'Benign']
 
-breast_cancer = pd.read_csv(urlopen(UCI_data_URL), names=names)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+LOCAL_DATA_PATH = os.path.join(BASE_DIR, 'src', 'pyspark', 'data', 'data.txt')
 
-# Setting 'id_number' as our index
-breast_cancer.set_index(['id_number'], inplace = True)
+try:
+    breast_cancer = pd.read_csv(urlopen(UCI_data_URL), names=names)
+    breast_cancer.set_index(['id_number'], inplace=True)
+    breast_cancer['diagnosis'] = breast_cancer['diagnosis'].map({'M':1, 'B':0})
+except Exception:
+    if os.path.exists(LOCAL_DATA_PATH):
+        df_raw = pd.read_csv(LOCAL_DATA_PATH, header=None, delim_whitespace=True)
+        df_raw['id_number'] = range(1, len(df_raw) + 1)
+        df_raw.rename(columns={0: 'diagnosis'}, inplace=True)
+        feature_cols = names[2:]
+        for idx, col in enumerate(feature_cols):
+            df_raw.rename(columns={idx + 1: col}, inplace=True)
+        breast_cancer = df_raw[['id_number', 'diagnosis'] + feature_cols]
+        breast_cancer.set_index(['id_number'], inplace=True)
+    else:
+        raise
 
-# Converted to binary to help later on with models and plots
-breast_cancer['diagnosis'] = breast_cancer['diagnosis'].map({'M':1, 'B':0})
 
 for col in breast_cancer:
 	pd.to_numeric(col, errors='coerce')

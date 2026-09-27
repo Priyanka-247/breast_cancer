@@ -1,12 +1,23 @@
 #!/usr/bin/env python3
+import os
 import sys
 import pandas as pd
-from sklearn.externals import joblib
-from urllib.request import urlopen
 from io import StringIO
 
+try:
+    import joblib
+except ImportError:
+    from sklearn.externals import joblib
+
 # Importing src python scripts ----------------------
-sys.path.insert(0, '../src/python/')
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+DASH_DIR = os.path.abspath(os.path.dirname(__file__))
+SRC_PYTHON_DIR = os.path.join(BASE_DIR, 'src', 'python')
+
+for p in [BASE_DIR, DASH_DIR, SRC_PYTHON_DIR]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
 from knn import fit_knn
 from random_forest import fit_rf
 from neural_networks import fit_nn
@@ -14,7 +25,7 @@ from data_extraction import test_set_scaled
 from data_extraction import test_set, test_class_set
 from helper_functions import create_conf_mat
 from produce_model_metrics import produce_model_metrics
-sys.path.pop(0)
+
 
 # Calling up metrics from the model scripts
 # KNN -----------------------------------------------
@@ -67,8 +78,9 @@ cross_tab_nn = create_conf_mat(test_class_set,
 # Classification Report Stuff
 def create_class_report(class_report_string):
    class_report_mod = StringIO(class_report_string)
-   class_report = pd.read_csv(class_report_mod, ',')
+   class_report = pd.read_csv(class_report_mod, sep=',')
    return class_report
+
 
 
 class_rep_knn_str = """

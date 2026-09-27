@@ -129,7 +129,7 @@ def variable_importance(fit):
             return print("'{0}' is not an instantiated model from scikit-learn".format(fit))
 
         # Captures whether the model has been trained
-        if not vars(fit)["estimators_"]:
+        if not hasattr(fit, "estimators_"):
             return print("Model does not appear to be trained.")
     except KeyError:
         KeyError("Model entered does not contain 'estimators_' attribute.")
@@ -185,7 +185,7 @@ def variable_importance(fit):
             return print("'{0}' is not an instantiated model from scikit-learn".format(fit))
 
         # Captures whether the model has been trained
-        if not vars(fit)["estimators_"].all():
+        if not hasattr(fit, "estimators_"):
             return print("Model does not appear to be trained.")
     except KeyError:
         raise KeyError("Model entered does not contain 'estimators_' attribute.")
@@ -245,8 +245,8 @@ def variable_importance_plot(importance, indices, name_index):
     importance_desc = sorted(importance)
     feature_space = []
     for i in range(indices.shape[0] - 1, -1, -1):
+        feature_space.append(name_index[indices[i]])
 
-    feature_space.append(name_index[indices[i]])
 
     fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -353,7 +353,7 @@ def cross_val_metrics(fit, training_set, class_set, estimator, print_results = T
             return print("'{0}' is not an instantiated model from scikit-learn".format(fit))
 
         # Captures whether the model has been trained
-        if not vars(fit)[my_estimators[estimator]]:
+        if not hasattr(fit, my_estimators[estimator]):
             return print("Model does not appear to be trained.")
 
     except KeyError as e:
