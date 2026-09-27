@@ -1,6 +1,6 @@
 import os
 import sys
-import json
+from urllib.parse import parse_qs
 
 import matplotlib
 matplotlib.use('Agg')
@@ -20,23 +20,13 @@ app = dash_app.server
 _original_wsgi_app = app.wsgi_app
 
 def _custom_wsgi_app(environ, start_response):
-    # If request contains debug keyword anywhere, output plain text environment dump
-    req_str = str(environ)
-    if 'debug' in environ.get('PATH_INFO', '') or 'debug' in environ.get('QUERY_STRING', '') or 'debug' in req_str:
-        lines = [f"{k} = {v}" for k, v in sorted(environ.items())]
-        dump = "\n".join(lines)
-        start_response('200 OK', [('Content-Type', 'text/plain')])
-        return [dump.encode('utf-8')]
-
-    path = environ.get('PATH_INFO', '')
-    if path.startswith('/api/index.py'):
-        path = path[13:] or '/'
-    elif path.startswith('/api/index'):
-        path = path[10:] or '/'
-    elif path.startswith('/api'):
-        path = path[4:] or '/'
-
-    environ['PATH_INFO'] = path or '/'
+    query_string = environ.get('QUERY_STRING', '')
+    qs = parse_qs(query_string)
+    
+    if 'path' in qs and qs['path']:
+        route_path = qs['path'][0]
+        environ['PATH_INFO'] = '/' + route_path.lstrip('/')
+    
     return _original_wsgi_app(environ, start_response)
 
 app.wsgi_app = _custom_wsgi_app
