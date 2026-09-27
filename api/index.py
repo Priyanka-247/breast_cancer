@@ -15,4 +15,16 @@ for d in [root_dir, dash_dir, src_dir]:
 
 from dash_dashboard.app import app as dash_app
 
-app = dash_app.server
+class PrefixMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        path = environ.get('PATH_INFO', '')
+        if path.startswith('/api/index'):
+            environ['PATH_INFO'] = path[10:] or '/'
+        elif path.startswith('/api'):
+            environ['PATH_INFO'] = path[4:] or '/'
+        return self.app(environ, start_response)
+
+app = PrefixMiddleware(dash_app.server)

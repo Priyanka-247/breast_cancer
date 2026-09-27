@@ -32,7 +32,7 @@ fit_rf = RandomForestClassifier(random_state=42)
 fit_rf.set_params(criterion = 'gini',
                   max_features = 'log2',
                   max_depth = 3,
-                  n_estimators=50)
+                  n_estimators=15)
 
 
 # Fit model on training data

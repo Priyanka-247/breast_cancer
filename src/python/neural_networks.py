@@ -23,8 +23,9 @@ from produce_model_metrics import produce_model_metrics
 
 # Fitting Neural Network ----------------------------------------
 # Fit model
-fit_nn = MLPClassifier(solver='lbfgs',
-	hidden_layer_sizes = (12, ),
+fit_nn = MLPClassifier(solver='adam',
+	max_iter=30,
+	hidden_layer_sizes = (8, ),
 	activation='tanh',
 	learning_rate_init=0.05,
 	random_state=42)
