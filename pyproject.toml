@@ -8,4 +8,4 @@ version = "0.1.0"
 description = "Breast Cancer Machine Learning Dash Dashboard"
 
 [tool.vercel]
-entrypoint = "app:app"
+entrypoint = "api/index.py"
