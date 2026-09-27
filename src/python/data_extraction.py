@@ -37,11 +37,13 @@ names = ['id_number', 'diagnosis', 'radius_mean',
 
 dx = ['Malignant', 'Benign']
 
+from sklearn.datasets import load_breast_cancer
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 LOCAL_DATA_PATH = os.path.join(BASE_DIR, 'src', 'pyspark', 'data', 'data.txt')
 
 try:
-    breast_cancer = pd.read_csv(urlopen(UCI_data_URL), names=names)
+    breast_cancer = pd.read_csv(urlopen(UCI_data_URL, timeout=2), names=names)
     breast_cancer.set_index(['id_number'], inplace=True)
     breast_cancer['diagnosis'] = breast_cancer['diagnosis'].map({'M':1, 'B':0})
 except Exception:
@@ -55,7 +57,15 @@ except Exception:
         breast_cancer = df_raw[['id_number', 'diagnosis'] + feature_cols]
         breast_cancer.set_index(['id_number'], inplace=True)
     else:
-        raise
+        sk_data = load_breast_cancer(as_frame=True)
+        df_sk = sk_data.frame
+        feature_cols = names[2:]
+        df_sk.columns = feature_cols + ['diagnosis']
+        # Map target: 0 (Malignant) -> 1, 1 (Benign) -> 0
+        df_sk['diagnosis'] = df_sk['diagnosis'].map({0: 1, 1: 0})
+        df_sk['id_number'] = range(1, len(df_sk) + 1)
+        breast_cancer = df_sk[['id_number', 'diagnosis'] + feature_cols].set_index('id_number')
+
 
 
 for col in breast_cancer:
