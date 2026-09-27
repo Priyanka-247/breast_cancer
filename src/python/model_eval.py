@@ -13,7 +13,10 @@
 Model Evaluation
 """
 # Import Packages -----------------------------------------------
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 from knn import fit_knn
 from random_forest import fit_rf
 from neural_networks import fit_nn

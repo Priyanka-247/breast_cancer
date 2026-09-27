@@ -15,8 +15,11 @@ Helper Functions Script
 # Import Packages -----------------------------------------------
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 from data_extraction import names_index
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score

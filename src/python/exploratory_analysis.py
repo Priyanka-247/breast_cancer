@@ -14,7 +14,10 @@ Exploratory Analysis
 """
 import helper_functions as hf
 from data_extraction import breast_cancer
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 import seaborn as sns
 
 print('''
