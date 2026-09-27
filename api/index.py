@@ -1,18 +1,23 @@
-import matplotlib
-matplotlib.use('Agg')
 import os
 import sys
 
-# Setup module search paths dynamically
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DASH_DIR = os.path.join(BASE_DIR, 'dash_dashboard')
-SRC_PYTHON_DIR = os.path.join(BASE_DIR, 'src', 'python')
+# Ensure root directory, dash_dashboard, and src/python are in sys.path
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dash_dir = os.path.join(root_dir, 'dash_dashboard')
+src_dir = os.path.join(root_dir, 'src', 'python')
 
-for p in [BASE_DIR, DASH_DIR, SRC_PYTHON_DIR]:
-    if p not in sys.path:
-        sys.path.insert(0, p)
+for d in [root_dir, dash_dir, src_dir]:
+    if d not in sys.path:
+        sys.path.insert(0, d)
 
-from dash_dashboard.app import app as dash_app
-
-# Expose WSGI app for Vercel
-app = dash_app.server
+def app(environ, start_response):
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        from dash_dashboard.app import app as dash_app
+        return dash_app.server(environ, start_response)
+    except Exception as e:
+        import traceback
+        err_msg = traceback.format_exc()
+        start_response('200 OK', [('Content-Type', 'text/plain')])
+        return [f"Serverless Traceback Error:\n{err_msg}".encode('utf-8')]
