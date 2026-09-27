@@ -21,11 +21,18 @@ app = dash_app.server
 _original_wsgi_app = app.wsgi_app
 
 def _custom_wsgi_app(environ, start_response):
-    path = environ.get('PATH_INFO', '')
-    if path.startswith('/api/index'):
-        environ['PATH_INFO'] = path[10:] or '/'
-    elif path.startswith('/api'):
-        environ['PATH_INFO'] = path[4:] or '/'
+    # Retrieve original path requested by the client from Vercel edge headers
+    raw_uri = environ.get('HTTP_X_FORWARDED_URI') or environ.get('RAW_URI') or environ.get('REQUEST_URI') or environ.get('PATH_INFO', '')
+    clean_path = raw_uri.split('?')[0]
+    
+    if clean_path.startswith('/api/index.py'):
+        clean_path = clean_path[13:] or '/'
+    elif clean_path.startswith('/api/index'):
+        clean_path = clean_path[10:] or '/'
+    elif clean_path.startswith('/api'):
+        clean_path = clean_path[4:] or '/'
+        
+    environ['PATH_INFO'] = clean_path or '/'
     return _original_wsgi_app(environ, start_response)
 
 app.wsgi_app = _custom_wsgi_app
