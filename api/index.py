@@ -1,6 +1,5 @@
 import os
 import sys
-from urllib.parse import parse_qs
 
 import matplotlib
 matplotlib.use('Agg')
@@ -16,17 +15,3 @@ for d in [root_dir, dash_dir, src_dir]:
 from dash_dashboard.app import app as dash_app
 
 app = dash_app.server
-
-_original_wsgi_app = app.wsgi_app
-
-def _custom_wsgi_app(environ, start_response):
-    query_string = environ.get('QUERY_STRING', '')
-    qs = parse_qs(query_string)
-    
-    if 'path' in qs and qs['path']:
-        route_path = qs['path'][0]
-        environ['PATH_INFO'] = '/' + route_path.lstrip('/')
-    
-    return _original_wsgi_app(environ, start_response)
-
-app.wsgi_app = _custom_wsgi_app
