@@ -47,11 +47,12 @@ def generate_table(dataframe, max_rows=10):
 	)
 
 my_css_urls = [
-    'https://rawgit.com/raviolli77/machineLearning_breastCancer_Python/master/dash_dashboard/dash_breast_cancer.css',
+    'https://raw.githubusercontent.com/Priyanka-247/breast_cancer/main/dash_dashboard/dash_breast_cancer.css',
 ]
 
-app = dash.Dash(__name__, external_stylesheets=my_css_urls)
+app = dash.Dash(__name__, external_stylesheets=my_css_urls, suppress_callback_exceptions=True)
 server = app.server
+
 
 
 app.layout = html.Div([
